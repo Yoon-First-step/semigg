@@ -41,4 +41,11 @@ public class User {
         this.league = league;
         league.setUser(this);
     }
+
+    public void updateSummonerInfo(String newName, String newTagLine) {
+        this.mainSummonerName = newName;
+        this.tagLine = newTagLine;
+    }
+
+
 }
