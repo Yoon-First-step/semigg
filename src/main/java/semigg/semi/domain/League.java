@@ -2,6 +2,7 @@ package semigg.semi.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import semigg.semi.dto.LeagueDto;
 
 @Entity
 @Table(name = "leagues")
@@ -18,8 +19,8 @@ public class League {
     @Column(nullable = false)
     private String tier;          // e.g. GOLD, PLATINUM
 
-    @Column(nullable = false)
-    private String rank;          // e.g. I, II
+    @Column(name = "league_rank", nullable = false)
+    private String rank;       // e.g. I, II
 
     @Column(nullable = false)
     private int leaguePoints;
@@ -36,6 +37,12 @@ public class League {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
+
+    public void updateInfo(LeagueDto dto) {
+        this.tier = dto.getTier();
+        this.rank = dto.getRank();
+        this.leaguePoints = dto.getLeaguePoints();
+    }
 
     // == 연관관계 메서드 == //
     public void setUser(User user) {
