@@ -2,6 +2,7 @@ package semigg.semi.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import semigg.semi.domain.League;
 
 @Getter
 @Setter
@@ -17,4 +18,13 @@ public class LeagueDto {
     private String summonerId;      // EncryptedSummonerId
     private String leagueId;        // 리그 ID (optional)
     // 필요시 toString()도 추가 가능
+    public static LeagueDto fromEntity(League league) {
+        LeagueDto dto = new LeagueDto();
+        dto.setTier(league.getTier());
+        dto.setRank(league.getRank());
+        dto.setWins(league.getWins());
+        dto.setLosses(league.getLosses());
+        dto.setQueueType(league.getQueueType());
+        return dto;
+    }
 }

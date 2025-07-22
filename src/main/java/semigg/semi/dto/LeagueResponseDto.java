@@ -1,28 +1,27 @@
 package semigg.semi.dto;
 
-import lombok.*;
-import semigg.semi.domain.League;
+import semigg.semi.dto.LeagueDto;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class LeagueResponseDto {
+    private String tier;
+    private String rank;
+    private int wins;
+    private int losses;
+    private double winRate;
 
-    private Long id;
-    private String tier;         // 예: GOLD, PLATINUM
-    private String rank;         // 예: I, II, III, IV
-    private int leaguePoints;    // 리그 포인트 (LP)
-    private Long userId;         // 유저 ID
+    // 정적 팩토리 메서드
+    public static LeagueResponseDto fromDto(LeagueDto dto) {
+        LeagueResponseDto response = new LeagueResponseDto();
+        response.tier = dto.getTier();
+        response.rank = dto.getRank();
+        response.wins = dto.getWins();
+        response.losses = dto.getLosses();
 
-    public static LeagueResponseDto fromEntity(League league) {
-        return LeagueResponseDto.builder()
-                .id(league.getId())
-                .tier(league.getTier())
-                .rank(league.getRank())
-                .leaguePoints(league.getLeaguePoints())
-                .userId(league.getUser().getId())
-                .build();
+        int total = dto.getWins() + dto.getLosses();
+        response.winRate = total > 0 ? (dto.getWins() * 100.0 / total) : 0.0;
+
+        return response;
     }
+
+    // Getter/Setter 또는 Lombok @Getter @Setter @NoArgsConstructor 등 추가 가능
 }

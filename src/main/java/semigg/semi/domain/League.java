@@ -38,11 +38,15 @@ public class League {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    public void updateInfo(LeagueDto dto) {
-        this.tier = dto.getTier();
-        this.rank = dto.getRank();
-        this.leaguePoints = dto.getLeaguePoints();
+    public void updateLeagueInfo(String tier, String rank, int leaguePoints, int wins, int losses, String queueType) {
+        this.tier = tier;
+        this.rank = rank;
+        this.leaguePoints = leaguePoints;
+        this.wins = wins;
+        this.losses = losses;
+        this.queueType = queueType;
     }
+
 
     // == 연관관계 메서드 == //
     public void setUser(User user) {
