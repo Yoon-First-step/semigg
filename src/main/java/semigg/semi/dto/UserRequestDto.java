@@ -1,5 +1,7 @@
 package semigg.semi.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -9,9 +11,15 @@ import lombok.*;
 @Builder
 public class UserRequestDto {
 
-    private String email;             // 로그인 ID
-    private String name;              // 이름
-    private String studentId;         // 학번
-    private String riotId;  // 예: "Hide on bush#KR1   // 소환사 태그
-
+    @NotBlank
+    @Email
+    private String email;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String studentId;
+    @NotBlank
+    private String mainSummonerName; // JSON 필드와 일치
+    @NotBlank
+    private String tagLine;          // JSON 필드와 일치
 }

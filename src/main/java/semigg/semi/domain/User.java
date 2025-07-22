@@ -46,6 +46,5 @@ public class User {
         this.mainSummonerName = newName;
         this.tagLine = newTagLine;
     }
-
-
 }
+
