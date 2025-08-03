@@ -16,7 +16,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update     # 또는 validate / create-drop
+      ddl-auto: create   # 또는 validate / create-drop
     show-sql: true
     properties:
       hibernate:
@@ -28,7 +28,12 @@ spring:
 
 riot:
   api:
-    key: RGAPI-0d7affa3-8869-4d4a-9ce7-c338a2d9452c
-    region-url: https://asia.api.riotgames.com
+    key: RGAPI-c391455b-005b-4f1a-8942-ebbacfc86f51
+    riotregion-url: https://asia.api.riotgames.com
     platform-url: https://kr.api.riotgames.com
+    match-url: https://asia.api.riotgames.com
 
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace

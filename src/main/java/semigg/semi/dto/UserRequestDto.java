@@ -18,8 +18,4 @@ public class UserRequestDto {
     private String name;
     @NotBlank
     private String studentId;
-    @NotBlank
-    private String mainSummonerName; // JSON 필드와 일치
-    @NotBlank
-    private String tagLine;          // JSON 필드와 일치
 }
