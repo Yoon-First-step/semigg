@@ -5,6 +5,7 @@ import semigg.semi.domain.RiotAccount;
 
 @Builder
 public record RiotAccountDto(
+        int profileIconId,
         String summonerName,
         String tagLine,
         String tier,
@@ -17,6 +18,7 @@ public record RiotAccountDto(
 ) {
     public static RiotAccountDto from(RiotAccount entity) {
         return new RiotAccountDto(
+                entity.getProfileIconId(),
                 entity.getSummonerName(),
                 entity.getTagLine(),
                 entity.getTier(),

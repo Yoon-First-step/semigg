@@ -22,6 +22,7 @@ public class RiotAccountService {
     private final UserRepository userRepository;
     private final RiotApiService riotApiService;
 
+    //계정 등록 서비스
     @Transactional
     public RiotAccount registerAccount(Long userId, RegisterAccountRequest request) {
         User user = userRepository.findById(userId)
@@ -34,19 +35,22 @@ public class RiotAccountService {
 
         // ✅ 2. 본계정 여부 확인
         boolean hasMain = riotAccountRepository.existsByUserIdAndIsMainAccountTrue(userId);
-
         // ✅ 3. 엔티티 생성
+        SummonerLeagueInfo league = api.getLeagueInfo();
+        SummonerProfileDto profile = api.getProfile();
+
         RiotAccount account = new RiotAccount(
                 user,
                 api.getSummonerName(),
                 api.getTagLine(),
-                api.getTier(),
-                api.getRank(),
-                api.getLeaguePoints(),
-                api.getWins(),
-                api.getLosses(),
-                api.getMainPosition(),
-                !hasMain, // 첫 등록이면 본계정
+                league.getTier(),
+                league.getRank(),
+                league.getLp(),
+                league.getWins(),
+                league.getLosses(),
+                league.getMainPosition(),
+                !hasMain,
+                profile.getProfileIconId(),
                 LocalDateTime.now()
         );
 

@@ -25,6 +25,7 @@ public class LeaderboardService {
 
         List<LeaderboardEntryDto> rawList = accounts.stream()
                 .map(account -> LeaderboardEntryDto.builder()
+                        .profileId(account.getProfileIconId())
                         .name(account.getUser().getName())
                         .studentId(account.getUser().getStudentId())
                         .tier(account.getTier())
@@ -50,6 +51,7 @@ public class LeaderboardService {
         AtomicInteger rank = new AtomicInteger(1);
         return rawList.stream()
                 .map(dto -> LeaderboardEntryDto.builder()
+                        .profileId(dto.getProfileId())
                         .rank(rank.getAndIncrement())
                         .name(dto.getName())
                         .studentId(dto.getStudentId())

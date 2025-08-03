@@ -31,6 +31,7 @@ public class RiotAccount {
     private String mainPosition;
     private boolean isMainAccount;
     private double winRate;
+    private int profileIconId;
     private LocalDateTime lastUpdated;
 
     // 생성자 방식으로 객체 생성
@@ -45,6 +46,7 @@ public class RiotAccount {
             int losses,
             String mainPosition,
             boolean isMainAccount,
+            int profileIconId,
             LocalDateTime lastUpdated
     ) {
         this.user = user;
@@ -57,6 +59,7 @@ public class RiotAccount {
         this.losses = losses;
         this.mainPosition = mainPosition;
         this.isMainAccount = isMainAccount;
+        this.profileIconId = profileIconId;
         this.lastUpdated = lastUpdated;
         this.winRate = calculateWinRate();
     }
@@ -73,6 +76,7 @@ public class RiotAccount {
         this.lp = lp;
         this.wins = wins;
         this.losses = losses;
+        this.profileIconId = profileIconId;
         this.lastUpdated = LocalDateTime.now();
         this.winRate = calculateWinRate();
     }
