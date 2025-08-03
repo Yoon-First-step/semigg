@@ -1,30 +1,47 @@
 package semigg.semi.dto;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import semigg.semi.domain.League;
+
+import java.util.List;
 
 @Getter
-@Setter
 public class LeagueDto {
 
-    private String queueType;       // 예: RANKED_SOLO_5x5
-    private String tier;            // 예: GOLD, SILVER
-    private String rank;            // 예: I, II, III, IV
-    private int leaguePoints;       // 예: 50
-    private int wins;               // 승리 수
-    private int losses;             // 패배 수
-    private String summonerName;    // 소환사 이름
-    private String summonerId;      // EncryptedSummonerId
-    private String leagueId;        // 리그 ID (optional)
-    // 필요시 toString()도 추가 가능
-    public static LeagueDto fromEntity(League league) {
-        LeagueDto dto = new LeagueDto();
-        dto.setTier(league.getTier());
-        dto.setRank(league.getRank());
-        dto.setWins(league.getWins());
-        dto.setLosses(league.getLosses());
-        dto.setQueueType(league.getQueueType());
-        return dto;
+    private final String queueType;
+    private final String tier;
+    private final String rank;
+    private final int leaguePoints;
+    private final int wins;
+    private final int losses;
+    private final String summonerName;
+    private final String summonerId;
+    private final String leagueId;
+
+    private final String tagLine;            // 🆕 추가
+    private final String mainPosition;       // 🆕 추가
+    private final List<String> mostChampions;// 🆕 추가
+
+    @Builder
+    public LeagueDto(String queueType, String tier, String rank, int leaguePoints, int wins, int losses,
+                     String summonerName, String summonerId, String leagueId,
+                     String tagLine, String mainPosition, List<String> mostChampions) {
+        this.queueType = queueType;
+        this.tier = tier;
+        this.rank = rank;
+        this.leaguePoints = leaguePoints;
+        this.wins = wins;
+        this.losses = losses;
+        this.summonerName = summonerName;
+        this.summonerId = summonerId;
+        this.leagueId = leagueId;
+        this.tagLine = tagLine;
+        this.mainPosition = mainPosition;
+        this.mostChampions = mostChampions;
+    }
+
+    public double getWinRate() {
+        int total = wins + losses;
+        return total == 0 ? 0.0 : Math.round((wins * 100.0 / total) * 10) / 10.0;
     }
 }

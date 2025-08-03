@@ -23,5 +23,4 @@ public class LeagueResponseDto {
         return response;
     }
 
-    // Getter/Setter 또는 Lombok @Getter @Setter @NoArgsConstructor 등 추가 가능
 }

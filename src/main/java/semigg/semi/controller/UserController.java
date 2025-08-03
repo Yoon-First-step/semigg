@@ -3,8 +3,10 @@ package semigg.semi.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import semigg.semi.dto.EmailRequest;
 import semigg.semi.dto.UserRequestDto;
 import semigg.semi.dto.UserResponseDto;
+import semigg.semi.dto.VerificationRequest;
 import semigg.semi.service.UserService;
 import semigg.semi.service.EmailService;
 
@@ -22,24 +24,20 @@ public class UserController {
         return ResponseEntity.ok(userId);
     }
 
-    // 이메일로 사용자 조회
-//    @GetMapping("/email")
-//    public ResponseEntity<UserResponseDto> getByEmail(@RequestParam("email") String email) {
-//        return ResponseEntity.ok(userService.findByEmail(email));
-//    }
-
     //이메일 인증 코드 발송
     @PostMapping("/send-auth-code")
-    public ResponseEntity<Void> sendAuthCode(@RequestParam("email") String email) {
+    public ResponseEntity<Void> sendAuthCode(@RequestBody EmailRequest request) {
+        String email = request.getEmail();
         emailService.sendAuthCode(email);
         return ResponseEntity.ok().build();
     }
 
-//    // ID로 사용자 조회
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserResponseDto> getById(@PathVariable Long id) {
-//        return ResponseEntity.ok(userService.findById(id));
-//    }
+    //이메일 인증 완료시 true 반환
+    @PostMapping("/verify-code")
+    public ResponseEntity<Boolean> verifyCode(@RequestBody VerificationRequest dto) {
+        boolean result = emailService.verifyCode(dto.getEmail(), dto.getCode());
+        return ResponseEntity.ok(result);
+    }
 
     //ID로 사용자 정보 업데이트
     @PostMapping("/{id}/refresh")
@@ -47,5 +45,6 @@ public class UserController {
         userService.refreshUserAndLeague(id);
         return ResponseEntity.ok().build();
     }
+
 
 }

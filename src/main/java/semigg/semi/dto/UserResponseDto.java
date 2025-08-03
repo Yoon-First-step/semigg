@@ -14,8 +14,6 @@ public class UserResponseDto {
     private String email;
     private String name;
     private String studentId;
-    private String mainSummonerName;
-    private String tagLine;
 
     public static UserResponseDto fromEntity(User user) {
         return UserResponseDto.builder()
@@ -23,8 +21,6 @@ public class UserResponseDto {
                 .email(user.getEmail())
                 .name(user.getName())
                 .studentId(user.getStudentId())
-                .mainSummonerName(user.getMainSummonerName())
-                .tagLine(user.getTagLine())
                 .build();
     }
 }

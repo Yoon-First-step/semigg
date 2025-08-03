@@ -33,13 +33,13 @@ public class UserService {
     @Transactional
     public Long register(UserRequestDto dto, String verificationCode) {
         try {
-            log.info("회원가입 요청: email={}, name={}, studentId={}, mainSummonerName={}, tagLine={}",
-                    dto.getEmail(), dto.getName(), dto.getStudentId(), dto.getMainSummonerName(), dto.getTagLine());
+            log.info("회원가입 요청: email={}, name={}, studentId={}",
+                    dto.getEmail(), dto.getName(), dto.getStudentId());
 
             if (userRepository.existsByEmail(dto.getEmail())) {
                 throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
             }
-            //인증코드 완료 부분따로 설정
+
             boolean isVerified = emailService.verifyCode(dto.getEmail(), verificationCode);
             if (!isVerified) {
                 throw new IllegalArgumentException("이메일 인증 코드가 올바르지 않거나 만료되었습니다.");
@@ -49,8 +49,6 @@ public class UserService {
                     .email(dto.getEmail())
                     .name(dto.getName())
                     .studentId(dto.getStudentId())
-                    .mainSummonerName(dto.getMainSummonerName())
-                    .tagLine(dto.getTagLine())
                     .build();
 
             User savedUser = userRepository.save(user);
@@ -94,8 +92,6 @@ public class UserService {
         SummonerDto summonerDto = riotApiService.getSummonerByRiotId(summonerName, tagLine);
         user.updateSummonerInfo(summonerDto.getName(), summonerDto.getTagLine());
 
-        // 3. Riot API - 리그 정보 조회
-        //LeagueDto leagueDto = riotApiService.getLeagueBySummonerId(summonerDto.getId());
 
         // 4. 리그 정보 갱신
         Optional<LeagueDto> leagueOpt = riotApiService.getLeagueBySummonerId(summonerDto.getId());

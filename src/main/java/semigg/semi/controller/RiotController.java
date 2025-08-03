@@ -17,7 +17,6 @@ public class RiotController {
         this.riotApiService = riotApiService;
     }
 
-
     @GetMapping("/summoner")
     public SummonerDto getSummoner(@RequestParam("name") String name) {
         return riotApiService.getSummonerByName(name);
