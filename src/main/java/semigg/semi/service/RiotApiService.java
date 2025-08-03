@@ -24,6 +24,9 @@ public class RiotApiService {
     private final RiotApiProperties riotApiProperties;
     private static final Logger log = LoggerFactory.getLogger(RiotApiService.class);
 
+
+
+
     @Value("${riot.api.riotregion-url}")
     private String riotRegionUrl;
 
@@ -37,6 +40,7 @@ public class RiotApiService {
     private String platformUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
 
     // 소환사 정보 조회
     public SummonerDto getSummonerByName(String summonerName) {
@@ -173,34 +177,50 @@ public class RiotApiService {
     }
 
     public Optional<RiotApiResponse> getRiotApiResponse(String summonerName, String tagLine) {
-        // 1. 소환사 ID 조회
+        // 1. 소환사 ID 및 PUUID 조회
         SummonerDto summoner = getSummonerByNameAndTag(summonerName, tagLine);
         String summonerId = summoner.getId();
         String puuid = fetchPuuidByRiotId(summonerName, tagLine);
 
+
         // 2. 리그 정보 조회
         Optional<LeagueDto> league = getLeagueBySummonerId(summonerId);
-
-        // 3. 챔피언 정보 및 포지션 계산
-        List<String> positionHistory = fetchPositionHistory(puuid); // 포지션 목록을 얻는 메서드 필요
-        String mainPosition = calculateMainPosition(positionHistory);
-        List<String> mostChamps = getMostChampions(summoner.getPuuid(), 3); // 상위 3개 챔피언 추출
-
         if (league.isEmpty()) return Optional.empty();
-
         LeagueDto l = league.get();
-        return Optional.of(new RiotApiResponse(
-                summoner.getName(),     // summonerName
-                tagLine,                // tagLine
-                "RANKED_SOLO_5x5",      // queueType ← 명시적 문자열 필요
+
+        // 3. 포지션 및 챔피언 정보
+        List<String> positionHistory = fetchPositionHistory(puuid);
+        String mainPosition = calculateMainPosition(positionHistory);
+        List<String> mostChamps = getMostChampions(puuid, 3);
+
+
+
+        // 4. 프로필 정보
+        SummonerProfileDto profile = new SummonerProfileDto(
+                summoner.getProfileIconId()
+        );
+
+        // 5. 리그 정보 DTO
+        SummonerLeagueInfo leagueInfo = new SummonerLeagueInfo(
+                "RANKED_SOLO_5x5", // queueType
                 l.getTier(),
                 l.getRank(),
                 l.getLeaguePoints(),
                 l.getWins(),
                 l.getLosses(),
-                mainPosition,
+                mainPosition
+        );
+
+        // 6. 최종 응답 DTO 조립
+        RiotApiResponse response = new RiotApiResponse(
+                summoner.getName(),
+                tagLine,
+                leagueInfo,
+                profile,
                 mostChamps
-        ));
+        );
+
+        return Optional.of(response);
     }
 
     //메인 포지션 리스트 추출

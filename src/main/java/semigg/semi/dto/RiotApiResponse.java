@@ -10,15 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RiotApiResponse {
-    private String summonerName;     // ✅ 추가
-    private String tagLine;          // ✅ 추가
-
-    private String queueType;
-    private String tier;
-    private String rank;
-    private int leaguePoints;
-    private int wins;
-    private int losses;
-    private String mainPosition;
+    private String summonerName;
+    private String tagLine;
+    private SummonerLeagueInfo leagueInfo;
+    private SummonerProfileDto profile;
     private List<String> mostChampions;
 }

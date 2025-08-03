@@ -12,6 +12,7 @@ public record ProfileCardDto(
         return new ProfileCardDto(
                 accounts.stream()
                         .map(a -> RiotAccountDto.builder()
+                                .profileIconId(a.getProfileIconId())
                                 .summonerName(a.getSummonerName())
                                 .tagLine(a.getTagLine())
                                 .tier(a.getTier())
