@@ -1,8 +1,8 @@
-package semigg.semi.domain;
+package semigg.semi.domain.lol;
 
 import jakarta.persistence.*;
 import lombok.*;
-import semigg.semi.dto.LeagueDto;
+import semigg.semi.domain.User;
 
 @Entity
 @Table(name = "leagues")

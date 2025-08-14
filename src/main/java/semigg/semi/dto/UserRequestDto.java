@@ -18,4 +18,6 @@ public class UserRequestDto {
     private String name;
     @NotBlank
     private String studentId;
+    @NotBlank
+    private String password;
 }

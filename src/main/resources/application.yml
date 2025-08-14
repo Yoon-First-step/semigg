@@ -32,8 +32,14 @@ riot:
     riotregion-url: https://asia.api.riotgames.com
     platform-url: https://kr.api.riotgames.com
     match-url: https://asia.api.riotgames.com
+    lol-match-prefix: /lol/match/v5
+    tft-match-prefix: /tft/match/v1
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+jwt:
+  secret: your-very-secret-jwt-signing-key-here-please-change-it
+  expiration: 86400000  # 1일 (밀리초 단위)

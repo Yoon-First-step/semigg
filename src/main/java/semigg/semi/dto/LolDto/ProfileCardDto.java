@@ -1,14 +1,14 @@
-package semigg.semi.dto;
+package semigg.semi.dto.LolDto;
 
 import lombok.Builder;
 import java.util.List;
-import semigg.semi.domain.RiotAccount;
+import semigg.semi.domain.lol.LolAccount;
 
 @Builder
 public record ProfileCardDto(
         List<RiotAccountDto> accounts
 ) {
-    public static ProfileCardDto from(List<RiotAccount> accounts) {
+    public static ProfileCardDto from(List<LolAccount> accounts) {
         return new ProfileCardDto(
                 accounts.stream()
                         .map(a -> RiotAccountDto.builder()

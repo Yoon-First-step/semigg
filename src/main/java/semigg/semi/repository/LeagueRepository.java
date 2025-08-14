@@ -2,7 +2,7 @@ package semigg.semi.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import semigg.semi.domain.League;
+import semigg.semi.domain.lol.League;
 
 import java.util.Optional;
 

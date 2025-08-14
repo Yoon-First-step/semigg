@@ -3,14 +3,14 @@ package semigg.semi.service;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import semigg.semi.domain.League;
+import semigg.semi.config.JwtTokenProvider;
+import semigg.semi.domain.lol.League;
 import semigg.semi.domain.User;
-import semigg.semi.dto.LeagueDto;
-import semigg.semi.dto.SummonerDto;
-import semigg.semi.dto.UserRequestDto;
-import semigg.semi.dto.UserResponseDto;
+import semigg.semi.dto.*;
+import semigg.semi.dto.LolDto.LeagueDto;
 import semigg.semi.repository.UserRepository;
 
 import java.util.Optional;
@@ -26,6 +26,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final RiotApiService riotApiService;
     private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
 
     /**
      * 회원가입
@@ -45,10 +49,14 @@ public class UserService {
                 throw new IllegalArgumentException("이메일 인증 코드가 올바르지 않거나 만료되었습니다.");
             }
 
+            // 🔒 비밀번호 암호화
+            String encodedPassword = passwordEncoder.encode(dto.getPassword());
+
             User user = User.builder()
                     .email(dto.getEmail())
                     .name(dto.getName())
                     .studentId(dto.getStudentId())
+                    .password(encodedPassword) // 비밀번호 저장
                     .build();
 
             User savedUser = userRepository.save(user);
@@ -59,23 +67,38 @@ public class UserService {
             throw e;
         }
     }
-    /**
-     * 이메일로 사용자 조회
-     */
-    public UserResponseDto findByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자가 없습니다."));
-        return UserResponseDto.fromEntity(user);
+
+    public String login(LoginRequestDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // JWT 토큰 발급 or 인증 완료 처리
+        return jwtTokenProvider.generateToken(user.getId(), user.getEmail());
     }
 
-    /**
-     * ID로 사용자 조회
-     */
-    public UserResponseDto findById(Long userId) {
-        User user = userRepository.findById(userId)
+    public LoginResponseDto login(String email, String password) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return UserResponseDto.fromEntity(user);
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        String accessToken = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+
+        return LoginResponseDto.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
+
     /**
      * 유저 정보 + 리그 수동 갱신
      */
@@ -124,4 +147,37 @@ public class UserService {
             log.info("리그 정보 없음: 아직 랭크 게임을 하지 않았을 수 있음.");
         }
     }
+
+    @Transactional
+    public void updateEmail(Long userId, String newEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 중복 이메일 확인
+        if (userRepository.existsByEmail(newEmail)) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
+        user.updateEmail(newEmail); // 엔티티에 해당 메서드 있어야 함
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 기존 비밀번호 확인 (비교 방식은 실제 인코딩 방식에 따라 달라짐)
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        user.updatePassword(encodedNewPassword); // 엔티티 메서드 필요
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
+    }
+
 }

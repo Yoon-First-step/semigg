@@ -1,4 +1,4 @@
-package semigg.semi.dto;
+package semigg.semi.dto.LolDto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
