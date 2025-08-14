@@ -8,6 +8,7 @@ import semigg.semi.domain.User;
 import semigg.semi.domain.lol.MostChampion;
 import semigg.semi.dto.*;
 import semigg.semi.dto.LolDto.LeaderboardEntryDto;
+import semigg.semi.dto.LolDto.ProfileCardDto;
 import semigg.semi.dto.LolDto.RiotAccountDto;
 import semigg.semi.repository.LolAccountRepository;
 import semigg.semi.repository.UserRepository;
@@ -74,7 +75,7 @@ public class LolAccountService {
 
     // ✅ 본계정 변경
     @Transactional
-    public void updateMainAccount(Long userId, Long newMainAccountId) {
+    public void changeMainAccount(Long userId, Long newMainAccountId) {
         List<LolAccount> accounts = riotAccountRepository.findByUserId(userId);
 
         for (LolAccount account : accounts) {
@@ -156,6 +157,22 @@ public class LolAccountService {
                                         .map(MostChampion::getChampionName)
                                         .toList()
                         )
+                        .build())
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProfileCardDto> getAllUserProfileCards() {
+        List<LolAccount> accounts = lolAccountRepository.findAllWithUser();
+
+        return accounts.stream()
+                .map(acc -> ProfileCardDto.builder()
+                        .name(acc.getUser().getName())
+                        .studentId(acc.getUser().getStudentId())
+                        .profileIconId(acc.getProfileIconId())
+                        .summonerName(acc.getSummonerName())
+                        .tagLine(acc.getTagLine())
+                        .tier(acc.getTier() + " " + acc.getRank())
                         .build())
                 .toList();
     }

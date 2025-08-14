@@ -60,6 +60,7 @@ public class UserController {
         private String newEmail;
     }
 
+    //패스워드 변경시
     @PatchMapping("/password")
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal UserPrincipal principal,

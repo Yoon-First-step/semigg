@@ -107,37 +107,50 @@ public class TftAccountService {
 
     @Transactional(readOnly = true)
     public TftProfileCardDto getProfileCardByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = getUserOrThrow(userId);
 
         TftAccount acc = tftAccountRepository
                 .findTopByUserIdAndIsMainAccountTrueOrderByIdDesc(userId)
                 .orElseThrow(() -> new IllegalStateException("본계정(TFT)이 등록되어 있지 않습니다."));
 
-        return toProfileCardDto(user, acc);
+        return buildProfileCard(user, acc);
     }
 
     @Transactional(readOnly = true)
     public TftProfileCardDto getProfileCardByAccount(Long userId, Long accountId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = getUserOrThrow(userId);
 
         TftAccount acc = tftAccountRepository.findByIdAndUserId(accountId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 계정을 찾을 수 없습니다."));
 
-        return toProfileCardDto(user, acc);
+        return buildProfileCard(user, acc);
     }
 
-    private TftProfileCardDto toProfileCardDto(User user, TftAccount acc) {
+    private TftProfileCardDto buildProfileCard(User user, TftAccount acc) {
         return TftProfileCardDto.builder()
                 .name(user.getName())
                 .studentId(user.getStudentId())
                 .profileIconId(acc.getProfileIconId())
                 .summonerName(acc.getSummonerName())
                 .tagLine(acc.getTagLine())
-                .tier(acc.getTier() + " " + acc.getRank())  // "GOLD II" 형태
+                .tier(acc.getTier() + " " + acc.getRank())
                 .build();
     }
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TftProfileCardDto> getAllUserProfileCards() {
+        List<TftAccount> accounts = tftAccountRepository.findAllWithUser(); // 사용자 포함 fetch
+
+        return accounts.stream()
+                .map(acc -> buildProfileCard(acc.getUser(), acc))
+                .toList();
+    }
+
 
     @Transactional
     public void refreshAccountStats(Long tftAccountId) {
@@ -145,7 +158,7 @@ public class TftAccountService {
                 .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다."));
 
         TftRankDto r = tftStatsService.getCurrentRank(acc.getPuuid());
-        TftComputedStats s = tftStatsService.computeStats(acc.getPuuid(), 20);
+        TftComputedStats s = tftStatsService.computeStatsSince(acc.getPuuid(), 20);
 
         acc.updateTftStats(
                 r.getTier(), r.getRank(), r.getLp(),

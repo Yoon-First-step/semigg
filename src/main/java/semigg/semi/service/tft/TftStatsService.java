@@ -12,10 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import semigg.semi.dto.TftDto.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +32,17 @@ public class TftStatsService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    LocalDate cutoffDate = LocalDate.of(2024, 7, 1);
+    long sinceEpochMillis = cutoffDate.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
     /**
-     * 최근 count 경기 기준으로 게임 수/순방률/승률/평균등수 계산
+     * 게임 수/순방률/승률/평균등수 계산
      */
-    public TftComputedStats computeStats(String puuid, int count) {
-        List<String> matchIds = fetchMatchIds(puuid, count);
+    public TftComputedStats computeStatsSince(String puuid, long sinceEpochMillis) {
+        List<String> matchIds = fetchTftRankedMatchIdsSince(puuid, sinceEpochMillis);
 
         int total = 0;
         int wins = 0;        // 1등
         int top4 = 0;        // 1~4등
-        int losses = 0;
         long placementSum = 0;
 
         for (String matchId : matchIds) {
@@ -56,7 +56,7 @@ public class TftStatsService {
 
             if (me.isEmpty()) continue;
 
-            int placement = me.get().getPlacement(); // 1~8
+            int placement = me.get().getPlacement();
             total++;
             placementSum += placement;
             if (placement == 1) wins++;
@@ -66,22 +66,62 @@ public class TftStatsService {
         double winRate = total == 0 ? 0 : (wins * 100.0) / total;
         double protectRate = total == 0 ? 0 : (top4 * 100.0) / total;
 
-        return new TftComputedStats(total, wins, losses, winRate, protectRate);
+        return new TftComputedStats(total, wins, 0 /* losses 미사용 */, winRate, protectRate);
     }
 
-    private List<String> fetchMatchIds(String puuid, int count) {
+
+    private List<String> fetchTftRankedMatchIdsSince(String puuid, long sinceEpochMillis) {
+        int start = 0;
+        int count = 20;
+        List<String> filteredMatches = new ArrayList<>();
+
+        while (true) {
+            List<String> matchIds = fetchMatchIds(puuid, start, count);
+            if (matchIds.isEmpty()) break;
+
+            for (String matchId : matchIds) {
+                TftMatchDto match = fetchMatch(matchId);
+                if (match == null || match.getInfo() == null) continue;
+
+                long gameStart = match.getInfo().getGameDatetime();
+                int queueId = match.getInfo().getQueueId();
+
+                if (queueId == 1100 && gameStart >= sinceEpochMillis) {
+                    filteredMatches.add(matchId);
+                }
+
+                if (gameStart < sinceEpochMillis) return filteredMatches;
+            }
+
+            start += count;
+        }
+
+        return filteredMatches;
+    }
+
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Riot-Token", apiKey);
+        return headers;
+    }
+
+    private List<String> fetchMatchIds(String puuid, int start, int count) {
         try {
             String url = String.format(
-                    "%s/tft/match/v1/matches/by-puuid/%s/ids?start=0&count=%d",
-                    baseUrl, puuid, count
+                    "%s/tft/match/v1/matches/by-puuid/%s/ids?start=%d&count=%d",
+                    baseUrl, puuid, start, count
             );
-            ResponseEntity<String[]> res = restTemplate.exchange(
-                    url, HttpMethod.GET, new HttpEntity<>(headers()), String[].class
+
+            ResponseEntity<String[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(createHeaders()),
+                    String[].class
             );
-            String[] body = res.getBody();
-            return body == null ? List.of() : Arrays.asList(body);
+
+            return Arrays.asList(response.getBody());
         } catch (Exception e) {
-            // log.warn("TFT match ids error", e);
+            log.error("📛 TFT Match ID 조회 실패 (puuid={}): {}", puuid, e.getMessage(), e);
             return List.of();
         }
     }
@@ -90,7 +130,7 @@ public class TftStatsService {
         try {
             String url = String.format("%s/tft/match/v1/matches/%s", baseUrl, matchId);
             ResponseEntity<TftMatchDto> res = restTemplate.exchange(
-                    url, HttpMethod.GET, new HttpEntity<>(headers()), TftMatchDto.class
+                    url, HttpMethod.GET, new HttpEntity<>(createHeaders()), TftMatchDto.class
             );
             return res.getBody();
         } catch (Exception e) {
@@ -99,23 +139,12 @@ public class TftStatsService {
         }
     }
 
-    private HttpHeaders headers() {
-        HttpHeaders h = new HttpHeaders();
-        h.set("X-Riot-Token", apiKey);
-        return h;
-    }
-
-    private HttpEntity<Void> auth() {
-        HttpHeaders h = new HttpHeaders();
-        h.set("X-Riot-Token", apiKey);
-        return new HttpEntity<>(h);
-    }
 
     // 1) PUUID -> TFT SummonerId 조회
     private String getTftSummonerIdByPuuid(String puuid) {
         String url = String.format("%s/tft/summoner/v1/summoners/by-puuid/%s", platformUrl, puuid);
         ResponseEntity<TftSummonerDto> res =
-                restTemplate.exchange(url, HttpMethod.GET, auth(), TftSummonerDto.class);
+                restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders()), TftSummonerDto.class);
         return Objects.requireNonNull(res.getBody()).getId(); // encryptedSummonerId
     }
 
@@ -126,7 +155,7 @@ public class TftStatsService {
 
             String url = String.format("%s/tft/league/v1/entries/by-summoner/%s", platformUrl, summonerId);
             ResponseEntity<TftRankEntryDto[]> res =
-                    restTemplate.exchange(url, HttpMethod.GET, auth(), TftRankEntryDto[].class);
+                    restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders()), TftRankEntryDto[].class);
 
             TftRankEntryDto[] entries = res.getBody();
 
@@ -151,7 +180,7 @@ public class TftStatsService {
     }
 
     public TftStatsSnapshot buildStatsSnapshot(String puuid) {
-        TftComputedStats s = computeStats(puuid, 20);
+        TftComputedStats s = computeStatsSince(puuid, sinceEpochMillis); // 🔄 수정
         return new TftStatsSnapshot(
                 s.getPlayCount(),
                 s.getWins(),

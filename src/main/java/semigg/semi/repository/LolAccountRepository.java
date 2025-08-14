@@ -50,4 +50,7 @@ public interface LolAccountRepository extends JpaRepository<LolAccount, Long> {
 
     // ✅ 소환사명+태그로 계정 찾기 (중복 방지용 등)
     Optional<LolAccount> findBySummonerNameAndTagLine(String summonerName, String tagLine);
+
+    @Query("SELECT a FROM LolAccount a JOIN FETCH a.user")
+    List<LolAccount> findAllWithUser();
 }

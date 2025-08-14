@@ -11,6 +11,12 @@ public class MatchDto {
 
     @Getter
     public static class Info {
+        @JsonProperty("gameStartTimestamp")
+        private long gameStartTimestamp;
+
+        @JsonProperty("queueId")
+        private int queueId;
+
         private List<Participant> participants;
     }
 
@@ -18,6 +24,7 @@ public class MatchDto {
     public static class Participant {
         private String puuid;
         private String championName;
+
         @JsonProperty("teamPosition")
         private String teamPosition;
     }

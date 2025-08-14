@@ -1,19 +1,22 @@
 package semigg.semi.dto.TftDto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
-@Setter
 public class TftMatchDto {
-    private TftInfo info;
-    @Getter @Setter
-    public static class TftInfo {
+    private Info info;
+
+    @Getter
+    public static class Info {
         private List<TftParticipantDto> participants;
-        private Long game_datetime; // 필요시 시즌/기간 필터링
-        private Integer queue_id;   // 필요시 랭크만 필터
+
+        @JsonProperty("game_datetime")
+        private Long gameDatetime; // 경기 시작 시간 (Epoch millis)
+
+        @JsonProperty("queue_id")
+        private Integer queueId;   // 큐 타입 (e.g., 1100 = 랭크 게임)
     }
 }
-
