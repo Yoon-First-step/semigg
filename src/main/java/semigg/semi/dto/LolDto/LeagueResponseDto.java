@@ -1,6 +1,4 @@
-package semigg.semi.dto;
-
-import semigg.semi.dto.LeagueDto;
+package semigg.semi.dto.LolDto;
 
 public class LeagueResponseDto {
     private String tier;

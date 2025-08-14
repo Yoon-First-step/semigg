@@ -3,14 +3,14 @@ package semigg.semi.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import semigg.semi.domain.Stats;
+import semigg.semi.domain.lol.LolStats;
 
 import java.util.List;
 
 @Repository
-public interface StatsRepository extends JpaRepository<Stats, Long> {
+public interface StatsRepository extends JpaRepository<LolStats, Long> {
 
-    @Query("SELECT s FROM Stats s ORDER BY " +
+    @Query("SELECT s FROM LolStats s ORDER BY " +
             "CASE s.tier " +
             "  WHEN 'CHALLENGER' THEN 1 " +
             "  WHEN 'GRANDMASTER' THEN 2 " +
@@ -24,5 +24,5 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
             "  ELSE 10 END, " +
             "s.leaguePoints DESC")
 
-    List<Stats> findAllOrderedByRank();
+    List<LolStats> findAllOrderedByRank();
 }

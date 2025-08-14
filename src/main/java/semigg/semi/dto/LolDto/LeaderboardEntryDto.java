@@ -1,4 +1,4 @@
-package semigg.semi.dto;
+package semigg.semi.dto.LolDto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class LeaderboardEntryDto {
     private int rank;// 종합 순위
-    private int profileId;
+    private int profileIconId;
     private String name;            // 사용자 실명
     private String studentId;       // 학번
     private String tier;            // ex. PLATINUM

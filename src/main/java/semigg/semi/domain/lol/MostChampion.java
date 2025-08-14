@@ -1,4 +1,4 @@
-package semigg.semi.domain;
+package semigg.semi.domain.lol;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,11 +17,11 @@ public class MostChampion {
     private String championName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "riot_account_id", nullable = false)
-    private RiotAccount riotAccount;
+    @JoinColumn(name = "lol_account_id", nullable = false)
+    private LolAccount riotAccount;
 
     // 생성자
-    public MostChampion(String championName, RiotAccount riotAccount) {
+    public MostChampion(String championName, LolAccount riotAccount) {
         this.championName = championName;
         this.riotAccount = riotAccount;
     }

@@ -29,8 +29,8 @@ public class SummonerDto {
     @JsonProperty("revisionDate")
     private long revisionDate;
 
-    @JsonProperty("summonerLevel")
-    private long summonerLevel;
+    @JsonProperty("summonerName")
+    private String summonerName;
 
     @JsonIgnore
     private String tagLine;

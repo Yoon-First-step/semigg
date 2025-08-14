@@ -2,6 +2,7 @@ package semigg.semi.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import semigg.semi.domain.lol.League;
 
 @Entity
 @Table(name = "users")
@@ -9,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class User {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +18,9 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 50)
     private String email;  // 로그인 ID (이메일), 고유 식별자
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String password;//비번\
 
     @Column(nullable = false, length = 20)
     private String name;  // 이름
@@ -45,6 +49,14 @@ public class User {
     public void updateSummonerInfo(String newName, String newTagLine) {
         this.mainSummonerName = newName;
         this.tagLine = newTagLine;
+    }
+
+    public void updateEmail(String newEmail) {
+        this.email = newEmail;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
 

@@ -1,15 +1,16 @@
-package semigg.semi.domain;
+package semigg.semi.domain.tft;
 
 import jakarta.persistence.*;
 import lombok.*;
+import semigg.semi.domain.User;
 
 @Entity
 @Getter
-@Table(name = "stats")
+@Table(name = "tftstats")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Stats {
+public class TftStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +19,7 @@ public class Stats {
     private String summonerName;
     private String tagLine;
     private String tier;
-    @Column(name = "league_rank", nullable = false)
+    @Column(name = "tft_league_rank", nullable = false)
     private String rank;
     private int leaguePoints;
     private int wins;
@@ -28,8 +29,4 @@ public class Stats {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    // 계산용 필드 예시
-    public int getWinRate() {
-        return (int)((double) wins / (wins + losses) * 100);
-    }
 }

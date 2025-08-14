@@ -1,7 +1,7 @@
-package semigg.semi.dto;
+package semigg.semi.dto.LolDto;
 
 import lombok.Builder;
-import semigg.semi.domain.RiotAccount;
+import semigg.semi.domain.lol.LolAccount;
 
 @Builder
 public record RiotAccountDto(
@@ -16,7 +16,7 @@ public record RiotAccountDto(
         String mainPosition,
         boolean isMainAccount
 ) {
-    public static RiotAccountDto from(RiotAccount entity) {
+    public static RiotAccountDto from(LolAccount entity) {
         return new RiotAccountDto(
                 entity.getProfileIconId(),
                 entity.getSummonerName(),
