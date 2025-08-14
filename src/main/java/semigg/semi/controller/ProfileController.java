@@ -11,7 +11,9 @@ import semigg.semi.domain.User;
 import semigg.semi.domain.lol.LolAccount;
 import semigg.semi.dto.LolDto.ProfileCardDto;
 import semigg.semi.dto.TftDto.TftProfileCardDto;
+import semigg.semi.dto.TftDto.TftUserProfileDto;
 import semigg.semi.repository.LolAccountRepository;
+import semigg.semi.service.lol.LolAccountService;
 import semigg.semi.service.tft.TftAccountService;
 
 import java.util.List;
@@ -21,21 +23,19 @@ import java.util.List;
 @RequestMapping("/api/profile")
 public class ProfileController {
 
-    private final LolAccountRepository riotAccountRepository;
-
     private final TftAccountService tftAccountService;
+    private final LolAccountService lolAccountService;
 
-    //프로필 카드에 들어갈 정보 전달
-    @GetMapping("/{userId}/card")
-    public ResponseEntity<ProfileCardDto> getProfileCard(@PathVariable Long userId) {
-        List<LolAccount> accounts = riotAccountRepository.findByUserId(userId);
-        return ResponseEntity.ok(ProfileCardDto.from(accounts));
+    @GetMapping("/lol/all-cards")
+    public ResponseEntity<List<ProfileCardDto>> getAllLolProfileCards() {
+        List<ProfileCardDto> profiles = lolAccountService.getAllUserProfileCards();
+        return ResponseEntity.ok(profiles);
     }
 
-    // 4) 내 프로필 카드(본계정)
-    @GetMapping("/profile-card")
-    public TftProfileCardDto myCard(@AuthenticationPrincipal User user) {
-        return tftAccountService.getProfileCardByUser(user.getId());
+    @GetMapping("/tft/all-cards")
+    public ResponseEntity<List<TftProfileCardDto>> getAllUserProfileCards() {
+        List<TftProfileCardDto> profiles = tftAccountService.getAllUserProfileCards();
+        return ResponseEntity.ok(profiles);
     }
 
 }

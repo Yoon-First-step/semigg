@@ -2,12 +2,13 @@ package semigg.semi.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import semigg.semi.dto.LolDto.LeaderboardEntryDto;
 import semigg.semi.dto.TftDto.TftLeaderboardEntryDto;
 import semigg.semi.service.lol.LolLeaderboardService;
 import semigg.semi.service.tft.TftAccountService;
-import semigg.semi.service.tft.TftLeaderboardService;
 
 import java.util.List;
 
@@ -17,19 +18,15 @@ import java.util.List;
 public class LeaderboardController {
 
     private final LolLeaderboardService leaderboardService;
-
     private final TftAccountService tftAccountService;
 
-    //리더보드 순위 정렬 후 리스트로 정보 전달
-    @GetMapping
-    public ResponseEntity<List<LeaderboardEntryDto>> getLeaderboard() {
-        List<LeaderboardEntryDto> leaderboard = leaderboardService.getRankedLeaderboard();
-        return ResponseEntity.ok(leaderboard);
+    @GetMapping("/lol")
+    public ResponseEntity<List<LeaderboardEntryDto>> getLolLeaderboard() {
+        return ResponseEntity.ok(leaderboardService.getRankedLeaderboard());
     }
 
-    @GetMapping
-    public List<TftLeaderboardEntryDto> leaderboard() {
-        return tftAccountService.getLeaderboard();
+    @GetMapping("/tft")
+    public ResponseEntity<List<TftLeaderboardEntryDto>> getTftLeaderboard() {
+        return ResponseEntity.ok(tftAccountService.getLeaderboard());
     }
-
 }

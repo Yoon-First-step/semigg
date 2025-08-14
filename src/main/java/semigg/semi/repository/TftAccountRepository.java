@@ -33,6 +33,9 @@ public interface TftAccountRepository extends JpaRepository<TftAccount, Long> {
 
     Optional<TftAccount> findByIdAndUserId(Long id, Long userId);
 
+    @Query("SELECT a FROM TftAccount a JOIN FETCH a.user")
+    List<TftAccount> findAllWithUser();
+
     @Modifying
     @Query("update TftAccount a set a.isMainAccount = false where a.user.id = :userId")
     void clearMainByUserId(Long userId);
