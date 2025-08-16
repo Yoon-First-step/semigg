@@ -1,6 +1,7 @@
 package semigg.semi.domain.tft;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class TftAccount extends RiotAccount {
             String tagLine,
             int profileIconId,
             boolean isMainAccount,
-            String puuid,
+            int accountId,
             String tier,
            String rank,
             int lp,
@@ -41,7 +42,7 @@ public class TftAccount extends RiotAccount {
             double protectRate,
             LocalDateTime LastUpdated
     ){
-        super(user, summonerName, tagLine, profileIconId, isMainAccount);
+        super(user, summonerName, tagLine, profileIconId, isMainAccount,accountId);
         this.tier = tier;
         this.rank = rank;
         this.lp = lp;

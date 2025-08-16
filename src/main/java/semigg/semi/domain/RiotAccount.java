@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-
-@MappedSuperclass
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class RiotAccount {
