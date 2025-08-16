@@ -54,6 +54,7 @@ public class LolAccountService {
                 api.getTagLine(),
                 profile.getProfileIconId(),
                 !hasMain,
+                0,
                 league.getTier(),
                 league.getRank(),
                 league.getLp(),

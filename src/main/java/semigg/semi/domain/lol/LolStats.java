@@ -6,7 +6,7 @@ import semigg.semi.domain.User;
 
 @Entity
 @Getter
-@Table(name = "stats")
+@Table(name = "lolstats")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

@@ -16,7 +16,6 @@ import semigg.semi.service.UserService;
 
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

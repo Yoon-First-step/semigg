@@ -1,8 +1,6 @@
 package semigg.semi.domain.lol;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +32,7 @@ public class LolAccount extends RiotAccount {
             String tagLine,
             int profileIconId,
             boolean isMainAccount,
+            int accountId,
             String tier,
             String rank,
             int lp,
@@ -42,7 +41,7 @@ public class LolAccount extends RiotAccount {
             String mainPosition,
             LocalDateTime lastUpdated
     ){
-        super(user, summonerName, tagLine, profileIconId, isMainAccount);
+        super(user,summonerName, tagLine, profileIconId, isMainAccount,accountId);
         this.tier = tier;
         this.rank = rank;
         this.lp = lp;
@@ -71,6 +70,6 @@ public class LolAccount extends RiotAccount {
     public void updateMainPosition(String mainPosition) {
         this.mainPosition = mainPosition;
     }
-    @OneToMany(mappedBy = "riotAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MostChampion> mostChampions = new ArrayList<>();
+    @OneToMany(mappedBy = "lolaccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<MostChampion> mostChampions = new ArrayList<>();
 }

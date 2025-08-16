@@ -45,6 +45,7 @@ public class TftAccountService {
         // 3) 첫 등록이면 본계정
         boolean hasMain = tftAccountRepository.existsByUserIdAndIsMainAccountTrue(userId);
 
+
         // 4) 엔티티 생성/저장
         TftAccount account =
                 new TftAccount(
@@ -52,8 +53,8 @@ public class TftAccountService {
                 summoner.getName(),
                 req.getTagLine(),
                 summoner.getProfileIconId(),
-                !hasMain,             // 첫 등록이면 본계정
-                puuid,
+                !hasMain,// 첫 등록이면 본계정
+                        0,
                 rank.getTier(),
                 rank.getRank(),
                 rank.getLp(),

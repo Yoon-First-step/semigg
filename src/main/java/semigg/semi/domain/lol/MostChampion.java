@@ -18,11 +18,11 @@ public class MostChampion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lol_account_id", nullable = false)
-    private LolAccount riotAccount;
+    private LolAccount lolaccount;
 
     // 생성자
     public MostChampion(String championName, LolAccount riotAccount) {
         this.championName = championName;
-        this.riotAccount = riotAccount;
+        this.lolaccount = riotAccount;
     }
 }
